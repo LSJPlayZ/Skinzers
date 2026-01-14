@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skinzers - Poster Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background-color: #f6f6f6; color: #111; }
+    header { background: #fff; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; position: sticky; top: 0; z-index: 1000; }
+    header h1 { font-size: 24px; font-weight: 700; letter-spacing: 1px; }
+    nav a { margin-left: 24px; text-decoration: none; color: #333; font-weight: 500; cursor: pointer; }
+    .cart-link { position: relative; }
+    .cart-count { background: #ff3c00; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; margin-left: 5px; }
+   
+    .hero { height: 75vh; background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://m.media-amazon.com/images/I/71Z9OBbXl0L.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; }
+    .hero h2 { font-size: 48px; font-weight: 700; margin-bottom: 10px; }
+    .hero p { font-size: 18px; margin-bottom: 20px; }
+   
+    .section { padding: 60px 40px; text-align: center; }
+    .section h3 { font-size: 34px; margin-bottom: 40px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 30px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .card:hover { transform: translateY(-6px); }
+    .card img { width: 100%; height: 300px; object-fit: cover; }
+    .card-content { padding: 18px; }
+    .card-content h4 { font-size: 18px; margin-bottom: 8px; }
+    .price { font-size: 20px; font-weight: 600; margin-bottom: 14px; }
+    .card-content button { width: 100%; padding: 12px; background: black; color: white; border: none; border-radius: 6px; cursor: pointer; }
+
+    /* Collections Section */
+    #collections { background: #ffff99; /* Light yellow */ padding: 80px 40px; display: none; }
+    #collections.visible { display: block; }
+
+    /* Cart Modal */
+    .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+    .cart-modal.open { display: flex; }
+    .cart-content { background: white; width: 90%; max-width: 600px; border-radius: 12px; overflow: hidden; }
+    .cart-header { padding: 20px; background: #111; color: white; font-size: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .close-cart { cursor: pointer; font-size: 28px; }
+    .cart-items { max-height: 50vh; overflow-y: auto; padding: 20px; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+    .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    .item-details { flex: 1; margin-left: 15px; }
+    .item-details h4 { font-size: 16px; }
+    .quantity-controls { display: flex; align-items: center; gap: 10px; }
+    .quantity-controls button { width: 30px; height: 30px; background: #333; color: white; border: none; border-radius: 50%; cursor: pointer; }
+    .remove-item { color: #ff3c00; cursor: pointer; font-weight: 600; }
+    .cart-total { padding: 20px; text-align: right; font-size: 20px; font-weight: 600; border-top: 2px solid #eee; background: #f9f9f9; }
+    .empty-cart { text-align: center; padding: 40px; color: #777; font-size: 18px; }
+
+    /* Contact Section */
+    #contact { background: #111; color: #fff; padding: 80px 40px; }
+    #contact h3 { font-size: 34px; margin-bottom: 20px; }
+    #contact > p { margin-bottom: 20px; font-size: 18px; opacity: 0.9; }
+    .contact-info { margin-bottom: 40px; font-size: 18px; }
+    .contact-info a { color: #ff3c00; text-decoration: none; font-weight: 600; }
+    .contact-info a:hover { text-decoration: underline; }
+    .contact-info p { margin: 12px 0; }
+    .contact-form { max-width: 600px; margin: 0 auto; display: grid; gap: 16px; }
+    .contact-form input,
+    .contact-form textarea { 
+      width: 100%; 
+      padding: 14px; 
+      border: none; 
+      border-radius: 8px; 
+      background: #222; 
+      color: #fff; 
+      font-size: 16px; 
+    }
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder { color: #aaa; }
+    .contact-form textarea { min-height: 120px; resize: vertical; }
+    .contact-form button { 
+      padding: 16px; 
+      background: #ff3c00; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      font-size: 18px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: background 0.3s; 
+    }
+    .contact-form button:hover { background: #e03500; }
+
+    /* Custom Message Overlay */
+    #custom-message-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    #custom-message-overlay.open {
+      display: flex;
+    }
+    .custom-message-box {
+      background: white;
+      color: #111;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .custom-message-box h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #ff3c00;
+    }
+    .custom-message-box p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    .custom-message-box a {
+      display: inline-block;
+      margin: 10px;
+      padding: 14px 28px;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .custom-message-box .whatsapp-btn {
+      background: #25D366;
+    }
+    .custom-message-box .whatsapp-btn:hover {
+      background: #128C7E;
+    }
+    .custom-message-box .email-btn {
+      background: #ffff99; /* Light yellow */
+      color: #111;
+    }
+    .custom-message-box .email-btn:hover {
+      background: #ffff66;
+    }
+    .custom-message-box .close-overlay {
+      margin-top: 30px;
+      cursor: pointer;
+      color: #777;
+      font-size: 16px;
+    }
+
+    @media(max-width: 600px) {
+      .hero h2 { font-size: 34px; }
+      header { padding: 16px 20px; }
+      nav a { margin-left: 12px; font-size: 14px; }
+      .cart-content { width: 95%; }
+      .cart-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .cart-item img { width: 100%; height: 200px; }
+      #contact { padding: 60px 20px; }
+      .contact-info { font-size: 16px; }
+      .custom-message-box { padding: 20px; }
+      .custom-message-box h3 { font-size: 24px; }
+      .custom-message-box p { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ֆӄɨռʐɛʀֆ</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a id="collections-link">Collections</a>
+      <a id="custom-link">Custom</a>
+      <a class="cart-link">Cart (<span id="cart-count">0</span>)</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Turn Walls Into Art</h2>
+    <p>Premium posters that match your vibe</p>
+  </section>
+
+  <section class="section" id="trending">
+    <h3>Trending Posters</h3>
+    <div class="grid">
+      <div class="card" data-name="Minimal Quote Poster" data-price="399" data-img="https://i.etsystatic.com/23788761/r/il/a3be6d/2415434046/il_fullxfull.2415434046_t46x.jpg">
+        <img src="https://i.etsystatic.com/23788761/r/il/a3be6d/2415434046/il_fullxfull.2415434046_t46x.jpg" alt="Minimal Quote Poster">
+        <div class="card-content">
+          <h4>Minimal Quote Poster</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+      <div class="card" data-name="Anime Wall Art" data-price="399" data-img="https://m.media-amazon.com/images/I/81V2J7X-nZL._AC_UF894,1000_QL80_.jpg">
+        <img src="https://m.media-amazon.com/images/I/81V2J7X-nZL._AC_UF894,1000_QL80_.jpg" alt="Anime Wall Art">
+        <div class="card-content">
+          <h4>Anime Wall Art</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+      <div class="card" data-name="Car Aesthetic Poster" data-price="399" data-img="https://i.etsystatic.com/38797185/r/il/de4561/5567425734/il_fullxfull.5567425734_b1e4.jpg">
+        <img src="https://i.etsystatic.com/38797185/r/il/de4561/5567425734/il_fullxfull.5567425734_b1e4.jpg" alt="Car Aesthetic Poster">
+        <div class="card-content">
+          <h4>Car Aesthetic Poster</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+      <div class="card" data-name="Abstract Wall Art" data-price="399" data-img="https://www.uniqstiq.com/cdn/shop/products/abstract-wall-art-wall-art-prints-large-modern-colorful-wall-art-artwork-home-decor-pop-art-sculpture-uniqstiq-plexiglass-art-printed-uniqstiq-1.jpg?v=1720430973&width=3000">
+        <img src="https://www.uniqstiq.com/cdn/shop/products/abstract-wall-art-wall-art-prints-large-modern-colorful-wall-art-artwork-home-decor-pop-art-sculpture-uniqstiq-plexiglass-art-printed-uniqstiq-1.jpg?v=1720430973&width=3000" alt="Abstract Wall Art">
+        <div class="card-content">
+          <h4>Abstract Wall Art</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Car Collections Section -->
+  <section id="collections" class="section">
+    <h3>Car Collections</h3>
+    <div class="grid">
+      <!-- BMW M4 -->
+      <div class="card" data-name="BMW M4 Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/81yrz+uGqpL.jpg">
+        <img src="https://m.media-amazon.com/images/I/81yrz+uGqpL.jpg" alt="BMW M4 Poster">
+        <div class="card-content">
+          <h4>BMW M4</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Lamborghini Huracan -->
+      <div class="card" data-name="Lamborghini Huracan Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/81tzZbfSuaL.jpg">
+        <img src="https://m.media-amazon.com/images/I/81tzZbfSuaL.jpg" alt="Lamborghini Huracan Poster">
+        <div class="card-content">
+          <h4>Lamborghini Huracan</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Mercedes AMG in Smoke -->
+      <div class="card" data-name="Mercedes AMG Smoke Poster" data-price="399" data-img="https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/mercedes-benz-gt-in-a-war-torn-city-a-dramatic-painting-clark-leffler.jpg">
+        <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/mercedes-benz-gt-in-a-war-torn-city-a-dramatic-painting-clark-leffler.jpg" alt="Mercedes AMG Smoke Poster">
+        <div class="card-content">
+          <h4>Mercedes AMG Smoke</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Additional 7 High-Quality Posters -->
+      <div class="card" data-name="Neon Supercar Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/61P0pZYk2JL.jpg">
+        <img src="https://m.media-amazon.com/images/I/61P0pZYk2JL.jpg" alt="Neon Supercar">
+        <div class="card-content">
+          <h4>Neon Supercar</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="JDM R34 Night Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/61TNl1+VsHL.jpg">
+        <img src="https://m.media-amazon.com/images/I/61TNl1+VsHL.jpg" alt="JDM R34 Night">
+        <div class="card-content">
+          <h4>JDM R34 Night</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Ferrari Roma Poster" data-price="399" data-img="https://i.etsystatic.com/38797185/r/il/21aa67/5971783877/il_570xN.5971783877_1hn5.jpg">
+        <img src="https://i.etsystatic.com/38797185/r/il/21aa67/5971783877/il_570xN.5971783877_1hn5.jpg" alt="Ferrari Roma">
+        <div class="card-content">
+          <h4>Ferrari Roma</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Sunset Supercar Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/61Fcw4fvJWL.jpg">
+        <img src="https://m.media-amazon.com/images/I/61Fcw4fvJWL.jpg" alt="Sunset Supercar">
+        <div class="card-content">
+          <h4>Sunset Supercar</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Aston Martin Vantage Poster" data-price="399" data-img="https://i.ebayimg.com/images/g/jiQAAOSwMHpg82hM/s-l1200.jpg">
+        <img src="https://i.ebayimg.com/images/g/jiQAAOSwMHpg82hM/s-l1200.jpg" alt="Aston Martin Vantage">
+        <div class="card-content">
+          <h4>Aston Martin Vantage</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Tokyo Drift R34 Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/61zGlgtLSTL.jpg">
+        <img src="https://m.media-amazon.com/images/I/61zGlgtLSTL.jpg" alt="Tokyo Drift R34">
+        <div class="card-content">
+          <h4>Tokyo Drift R34</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Graffiti Supercar Poster" data-price="399" data-img="https://m.media-amazon.com/images/I/710QDYX8BrL.jpg">
+        <img src="https://m.media-amazon.com/images/I/710QDYX8BrL.jpg" alt="Graffiti Supercar">
+        <div class="card-content">
+          <h4>Graffiti Supercar</h4>
+          <div class="price">₹399</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Modal Placeholder -->
+  <div class="cart-modal" id="cart-modal">
+    <!-- Your full cart modal HTML here -->
+  </div>
+
+  <!-- Custom Message Overlay -->
+  <div id="custom-message-overlay">
+    <div class="custom-message-box">
+      <h3>Custom Orders</h3>
+      <p>For custom orders DM me on WhatsApp (7828002277) or on Email (dengrapratham@gmail.com).</p>
+      <a href="https://wa.me/917828002277" target="_blank" class="whatsapp-btn">Message on WhatsApp</a>
+      <a href="mailto:dengrapratham@gmail.com" class="email-btn">Send Email</a>
+      <div class="close-overlay">Close</div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section">
+    <h3>Contact Us</h3>
+    <p>Have questions, custom requests, or bulk orders? We're here to help!</p>
+    <div class="contact-info">
+      <p>📧 Email: <a href="mailto:dengrapratham@gmail.com">dengrapratham@gmail.com</a></p>
+      <p>📱 Phone / WhatsApp: <a href="https://wa.me/917828002277">+91 7828002277</a></p>
+    </div>
+    <form class="contact-form" id="contact-form">
+      <input type="text" id="contact-name" placeholder="Your Name" required>
+      <input type="email" id="contact-email" placeholder="Your Email" required>
+      <input type="text" id="contact-subject" placeholder="Subject" required>
+      <textarea id="contact-message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send via WhatsApp</button>
+    </form>
+  </section>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartCount = document.getElementById('cart-count');
+
+    function updateCartCount() {
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      cartCount.textContent = total;
+    }
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.card');
+        const name = card.dataset.name;
+        const price = parseInt(card.dataset.price);
+        const img = card.dataset.img;
+
+        const existingItem = cart.find(item => item.name === name);
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({ name, price, img, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+      });
+    });
+
+    // Collections navigation
+    const collectionsLink = document.getElementById('collections-link');
+    const collectionsSection = document.getElementById('collections');
+    const trendingSection = document.getElementById('trending');
+
+    collectionsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      trendingSection.style.display = 'none';
+      collectionsSection.classList.add('visible');
+      window.scrollTo({ top: collectionsSection.offsetTop - 100, behavior: 'smooth' });
+    });
+
+    // Custom overlay
+    const customLink = document.getElementById('custom-link');
+    const customOverlay = document.getElementById('custom-message-overlay');
+
+    customLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      customOverlay.classList.add('open');
+    });
+
+    customOverlay.addEventListener('click', (e) => {
+      if (e.target === customOverlay || e.target.classList.contains('close-overlay')) {
+        customOverlay.classList.remove('open');
+      }
+    });
+
+    // Contact form
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Your existing contact form code
+    });
+
+    updateCartCount();
+  </script>
+</body>
+</html>
